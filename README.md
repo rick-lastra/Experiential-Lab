@@ -652,13 +652,15 @@ Este proyecto fue desarrollado como parte del programa **[IBM SkillsBuild AI Exp
 
 ### Stack IBM de punta a punta
 
-| Herramienta | Rol en el proyecto |
-|---|---|
-| **IBM Bob** (AI coding assistant) | Desarrollo completo del proyecto: arquitectura, código, tests, debugging y documentación asistidos por IA |
-| **watsonx Orchestrate** | Despliegue del agente conversacional WODPredict Agent 1; registro de skills OpenAPI; integración con Slack |
-| **IBM SkillsBuild** | Plataforma del programa de aprendizaje; workspace de Slack donde se validó el agente en producción |
-| **IBM Container Registry** | Almacenamiento de la imagen Docker (`us.icr.io/wodpredict/wodpredict-ai`) |
-| **IBM Code Engine** | Plataforma serverless target para el deploy de la API en producción (documentado; requiere cuenta PAYG) |
+| Herramienta | Rol en el proyecto | Disponibilidad |
+|---|---|---|
+| **IBM Bob** (AI coding assistant) | Desarrollo completo del proyecto: arquitectura, código, tests, debugging y documentación asistidos por IA | ✅ AI Experiential Lab |
+| **watsonx Orchestrate** | Despliegue del agente conversacional WODPredict Agent 1; registro de skills OpenAPI; integración con Slack | ✅ AI Experiential Lab |
+| **IBM SkillsBuild** | Plataforma del programa de aprendizaje; workspace de Slack donde se validó el agente en producción | ✅ AI Experiential Lab |
+| **IBM Container Registry** | Almacenamiento de la imagen Docker (`us.icr.io/wodpredict/wodpredict-ai`) para deploy en nube | 🔶 Cuenta IBM Cloud PAYG |
+| **IBM Code Engine** | Deploy serverless permanente de la API (URL fija, sin dependencia de proceso local) | 🔶 Cuenta IBM Cloud PAYG |
+
+> **Nota sobre el entorno de ejecución:** El programa IBM SkillsBuild AI Experiential Learning Lab provee acceso a las capacidades de creación e implementación de agentes de **watsonx Orchestrate** y al asistente **IBM Bob**, pero no incluye servicios de infraestructura cloud como Container Registry o Code Engine (disponibles con cuenta IBM Cloud PAYG). Por esta razón, en la ejecución real del proyecto la API corrió localmente y se expuso de forma pública mediante **ngrok**, que actuó como túnel HTTPS hacia watsonx Orchestrate. IBM Container Registry e IBM Code Engine están documentados como el path natural de deploy en producción para quien disponga de una cuenta PAYG.
 
 ### Flujo de desarrollo con IBM Bob
 
