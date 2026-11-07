@@ -104,7 +104,6 @@ def health_check() -> str:
 
 @mcp.tool()
 def predict_overreaching(
-    session_id: str,
     sessions_last_3d: float,
     sessions_last_7d: float,
     sessions_last_28d: float,
@@ -133,7 +132,6 @@ def predict_overreaching(
     Devuelve la probabilidad [0-1] y el nivel de riesgo: 'bajo' (<30%), 'moderado' (30-60%) o 'alto' (>60%).
 
     Parámetros requeridos:
-    - session_id: identificador de la sesión (ej. 'A0001_2025-03-01')
     - sessions_last_3d: número de sesiones en los últimos 3 días
     - sessions_last_7d: número de sesiones en los últimos 7 días
     - sessions_last_28d: número de sesiones en los últimos 28 días
@@ -144,8 +142,10 @@ def predict_overreaching(
     - notes_last_28d: número de notas de fatiga subjetiva en los últimos 28 días
     - level: nivel del atleta ('novato', 'intermedio' o 'elite')
     """
+    import datetime
+    auto_id = f"{level.upper()}_{datetime.date.today().isoformat()}"
     payload = {
-        "session_id": session_id,
+        "session_id": auto_id,
         "sessions_last_3d": sessions_last_3d,
         "sessions_last_7d": sessions_last_7d,
         "sessions_last_28d": sessions_last_28d,
@@ -186,7 +186,6 @@ def predict_overreaching(
 
 @mcp.tool()
 def explain_overreaching(
-    session_id: str,
     sessions_last_3d: float,
     sessions_last_7d: float,
     sessions_last_28d: float,
@@ -219,8 +218,10 @@ def explain_overreaching(
     Parámetros: los mismos que predict_overreaching, más:
     - top_n: número de factores a mostrar (por defecto 5)
     """
+    import datetime
+    auto_id = f"{level.upper()}_{datetime.date.today().isoformat()}"
     payload = {
-        "session_id": session_id,
+        "session_id": auto_id,
         "sessions_last_3d": sessions_last_3d,
         "sessions_last_7d": sessions_last_7d,
         "sessions_last_28d": sessions_last_28d,

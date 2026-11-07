@@ -342,7 +342,7 @@ El modelo usa **29 features** en total:
 
 ## Servidor MCP (integración con agentes IA)
 
-El servidor MCP expone las capacidades de la API como **tools** que cualquier agente de IA compatible con el protocolo MCP puede invocar en lenguaje natural.
+El servidor MCP expone las capacidades de la API como **tools** que cualquier agente de IA compatible con el protocolo MCP puede invocar en lenguaje natural. El diseño es **agnóstico al agente**: el mismo servidor funciona con IBM Bob, Claude Desktop, Cursor o cualquier cliente MCP — sin modificar una sola línea de código.
 
 ### Tools disponibles
 
@@ -364,15 +364,54 @@ WODPREDICT_API_URL=http://localhost:8001 python -m wodpredict_mcp.server
 
 ### Conectar con Bob (IBM Bob)
 
-Añade esta configuración en el MCP config de Bob:
+En Bob: **Settings → MCP → `+` → Open Configuration File** y añade:
+
+```json
+{
+  "mcpServers": {
+    "wodpredict-ai": {
+      "command": "<ruta-al-python-del-entorno>",
+      "args": ["-m", "wodpredict_mcp.server"],
+      "cwd": "<ruta-al-proyecto>",
+      "env": {
+        "WODPREDICT_API_URL": "http://localhost:8002"
+      }
+    }
+  }
+}
+```
+
+> **Nota:** Usa el ejecutable `python.exe` del entorno virtual directamente (no `conda run`). En Windows con Conda:
+> `"command": "D:\\Miniconda3\\envs\\wodpredict\\python.exe"`
+> Obtén la ruta exacta con: `conda run -n wodpredict python -c "import sys; print(sys.executable)"`
+
+### Interoperabilidad — agentes compatibles
+
+El protocolo MCP es un estándar abierto. El mismo servidor `wodpredict_mcp/server.py` puede conectarse a cualquiera de estos clientes:
+
+| Cliente MCP | Canal de uso | Estado |
+|---|---|---|
+| **IBM Bob** | Chat de desarrollo / asistente de código | ✅ Documentado y probado |
+| **watsonx Orchestrate** | Agente en Slack (IBM SkillsBuild) | ✅ Demostrado en producción |
+| **Claude Desktop** | Chat local con Anthropic Claude | ✅ Compatible (ver config abajo) |
+| **Cursor** | Editor de código con agente IA | ✅ Compatible (misma config que Claude) |
+| **Cualquier cliente MCP** | SDK oficial Python / Node.js | ✅ Protocolo abierto |
+
+### Conectar con Claude Desktop
+
+1. Descarga [Claude Desktop](https://claude.ai/download) si no lo tienes instalado.
+2. Abre el archivo de configuración:
+   - **macOS:** `~/Library/Application Support/Claude/claude_desktop_config.json`
+   - **Windows:** `%APPDATA%\Claude\claude_desktop_config.json`
+3. Añade la entrada del servidor:
 
 ```json
 {
   "mcpServers": {
     "wodpredict": {
-      "command": "D:\\Miniconda3\\Scripts\\conda.exe",
+      "command": "conda",
       "args": ["run", "-n", "wodpredict", "python", "-m", "wodpredict_mcp.server"],
-      "cwd": "<ruta_al_proyecto>",
+      "cwd": "C:/ruta/al/proyecto/wodpredict-ai",
       "env": {
         "WODPREDICT_API_URL": "http://localhost:8001"
       }
@@ -380,6 +419,50 @@ Añade esta configuración en el MCP config de Bob:
   }
 }
 ```
+
+4. Asegúrate de que la API está corriendo (`uvicorn api.main:app --port 8001`) y reinicia Claude Desktop.
+5. Verás el ícono 🔌 en el chat — los tools `predict_overreaching`, `explain_overreaching` y `health_check` estarán disponibles.
+
+Pregunta de ejemplo para Claude:
+> *"Usa el tool de WODPredict para calcular el riesgo de un atleta intermedio con 3 sesiones en los últimos 3 días, 5 en la última semana, 15 en el último mes, carga 300 (3d) y 480 (7d), 90 días de historial y 2 notas de fatiga."*
+
+### Demo — IBM Bob invocando los tools MCP
+
+**Predicción de overreaching (`predict_overreaching`):**
+
+![Bob invocando predict_overreaching — resultado LOW 7.6%](screenshots/07_bob_mcp_predict.png)
+
+Bob invoca el tool `predict_overreaching` de `wodpredict-ai`, obtiene una probabilidad de **7.6%** (riesgo LOW) e interpreta el resultado en lenguaje natural: carga y frecuencia dentro de rangos normales para un atleta intermedio, sin señales de sobresfuerzo.
+
+**Explicación SHAP (`explain_overreaching`):**
+
+![Bob invocando explain_overreaching — Top 5 SHAP drivers](screenshots/08_bob_mcp_explain.png)
+
+Con `explain_overreaching`, Bob muestra los **Top 5 factores SHAP** que explican la predicción:
+
+| # | Factor | Dirección | Valor |
+|---|---|---|---|
+| 1 | Load last 7 days | ↓ reduces risk | 480 RPE×min |
+| 2 | Load last 3 days | ↓ reduces risk | 300 RPE×min |
+| 3 | Days since last session | ↓ reduces risk | 2 días |
+| 4 | Previous session load | ↓ reduces risk | 287 RPE×min |
+| 5 | `load_ratio_7_28` | ↑ pushes up risk | ~480M (raw) |
+
+Bob interpreta cada factor en contexto: los primeros 4 confirman una carga saludable; el factor 5 advierte que la proporción de carga reciente vs. mensual es alta debido al historial corto (28 días aún en construcción).
+
+### Demo — Claude Desktop invocando los tools MCP
+
+**Predicción de overreaching (`predict_overreaching`):**
+
+![Claude Desktop invocando predict_overreaching — resultado BAJO 8.4%](screenshots/09_claude_mcp_predict.png)
+
+Claude invoca el tool `predict_overreaching`, recibe **🟢 BAJO — 8.4%** con session_id generado automáticamente (`INTERMEDIO_2026-11-07`) e interpreta el contexto clínico: señala que con `acwr_valid=0` el modelo no usó ratios ACWR y sugiere re-correr con `acwr_valid=1` para mayor precisión.
+
+**Explicación SHAP (`explain_overreaching`):**
+
+![Claude Desktop invocando explain_overreaching — Top 5 SHAP drivers con análisis crítico](screenshots/11_claude_mcp_shap_explain.png)
+
+Claude muestra los Top 5 factores SHAP e identifica de forma autónoma un comportamiento del modelo: el factor `load_ratio_7_28` recibe un valor extremo (~480M) cuando `mean_session_load_28d` no se proporciona y el denominador queda cerca de cero. Esto demuestra que el agente no solo consume el tool sino que **razona sobre la calidad de la predicción** y sugiere datos adicionales para mejorarla.
 
 ---
 
