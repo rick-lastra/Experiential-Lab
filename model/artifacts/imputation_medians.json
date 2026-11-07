@@ -1,0 +1,19 @@
+{
+  "days_since_prev_session": 2.0,
+  "mean_session_load_28d": 298.47820512820505,
+  "acwr3_freq": 0.9333333333333332,
+  "acwr3_load": 0.8987870486444258,
+  "acwr_freq": 1.0,
+  "acwr_load": 0.9939565915748514,
+  "prev_rpe": 7.0,
+  "prev_session_load": 287.0,
+  "prev_has_note": 0.0,
+  "prob_fatiga_prev_session": 0.1259518142964728,
+  "prob_fatiga_last_note": 0.1108602229805979,
+  "days_since_last_note": 4.0,
+  "load_ratio_3_28": 1.3155668820337731,
+  "load_ratio_7_28": 0.8535797117908344,
+  "fatigue_signal": 0.1108602229805979,
+  "days_since_note_capped": 4.0,
+  "prev_rpe_norm": 0.7
+}

@@ -1,0 +1,21 @@
+[project]
+name = "wodpredict-ai"
+version = "0.1.0"
+description = "Prescripción adaptativa de cargas y predicción de rendimiento en WODs"
+requires-python = ">=3.12"
+dependencies = [
+    "pandas>=2.2",
+    "pydantic>=2.0",
+    "xgboost>=2.0",
+    "shap>=0.45",
+    "scikit-learn>=1.4",
+    "fastapi>=0.110",
+    "uvicorn[standard]>=0.29",
+    "huggingface_hub>=0.22",
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-v --tb=short"

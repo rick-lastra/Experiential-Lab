@@ -1,0 +1,493 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "WODPredict-AI",
+    "description": "Predicción de overreaching y prescripción adaptativa de cargas para CrossFit & Hyrox",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "tags": [
+          "Sistema"
+        ],
+        "summary": "Health",
+        "description": "Verifica que el servicio está activo y el modelo cargado.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/predict": {
+      "post": {
+        "tags": [
+          "Predicción"
+        ],
+        "summary": "Predict",
+        "description": "Predice la probabilidad de overreaching para una sesión.\n\nDevuelve:\n- `predicted_proba`: probabilidad [0, 1]\n- `risk_label`: 'bajo' (<0.30) | 'moderado' (0.30–0.60) | 'alto' (>0.60)",
+        "operationId": "predict_predict_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionFeaturesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PredictResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/explain": {
+      "post": {
+        "tags": [
+          "Explicabilidad"
+        ],
+        "summary": "Explain",
+        "description": "Predice la probabilidad de overreaching y explica los factores principales.\n\nDevuelve:\n- `predicted_proba`: probabilidad [0, 1]\n- `risk_label`: 'bajo' | 'moderado' | 'alto'\n- `base_value`: valor esperado del modelo (línea base SHAP)\n- `top_drivers`: top-8 features que más influyen en la predicción, con\n  su valor SHAP (positivo = empuja hacia overreaching) y el valor de la feature",
+        "operationId": "explain_explain_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionFeaturesRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExplainResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DriverItem": {
+        "properties": {
+          "feature": {
+            "type": "string",
+            "title": "Feature"
+          },
+          "shap_value": {
+            "type": "number",
+            "title": "Shap Value"
+          },
+          "feature_value": {
+            "type": "number",
+            "title": "Feature Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "feature",
+          "shap_value",
+          "feature_value"
+        ],
+        "title": "DriverItem"
+      },
+      "ExplainResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "predicted_proba": {
+            "type": "number",
+            "title": "Predicted Proba"
+          },
+          "risk_label": {
+            "type": "string",
+            "title": "Risk Label"
+          },
+          "base_value": {
+            "type": "number",
+            "title": "Base Value"
+          },
+          "top_drivers": {
+            "items": {
+              "$ref": "#/components/schemas/DriverItem"
+            },
+            "type": "array",
+            "title": "Top Drivers"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version",
+            "default": "0.1.0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "predicted_proba",
+          "risk_label",
+          "base_value",
+          "top_drivers"
+        ],
+        "title": "ExplainResponse"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "PredictResponse": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id"
+          },
+          "predicted_proba": {
+            "type": "number",
+            "title": "Predicted Proba",
+            "description": "Probabilidad de overreaching [0, 1]"
+          },
+          "risk_label": {
+            "type": "string",
+            "title": "Risk Label",
+            "description": "'bajo' | 'moderado' | 'alto'"
+          },
+          "model_version": {
+            "type": "string",
+            "title": "Model Version",
+            "default": "0.1.0"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "predicted_proba",
+          "risk_label"
+        ],
+        "title": "PredictResponse"
+      },
+      "SessionFeaturesRequest": {
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "title": "Session Id",
+            "description": "Identificador único de la sesión (ej. 'A0001_2025-03-01')"
+          },
+          "days_since_prev_session": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Since Prev Session"
+          },
+          "sessions_last_3d": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Sessions Last 3D"
+          },
+          "sessions_last_7d": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Sessions Last 7D"
+          },
+          "sessions_last_28d": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Sessions Last 28D"
+          },
+          "load_last_3d": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Load Last 3D"
+          },
+          "load_last_7d": {
+            "type": "number",
+            "minimum": 0.0,
+            "title": "Load Last 7D"
+          },
+          "mean_session_load_28d": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Mean Session Load 28D"
+          },
+          "acwr3_freq": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acwr3 Freq"
+          },
+          "acwr3_load": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acwr3 Load"
+          },
+          "acwr_freq": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acwr Freq"
+          },
+          "acwr_load": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acwr Load"
+          },
+          "acwr_valid": {
+            "type": "integer",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Acwr Valid"
+          },
+          "days_since_first_session": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Days Since First Session"
+          },
+          "prev_rpe": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 11.0,
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prev Rpe"
+          },
+          "prev_session_load": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prev Session Load"
+          },
+          "prev_has_note": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prev Has Note"
+          },
+          "prob_fatiga_prev_session": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prob Fatiga Prev Session"
+          },
+          "prob_fatiga_last_note": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Prob Fatiga Last Note"
+          },
+          "days_since_last_note": {
+            "anyOf": [
+              {
+                "type": "number",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Days Since Last Note"
+          },
+          "notes_last_28d": {
+            "type": "integer",
+            "minimum": 0.0,
+            "title": "Notes Last 28D"
+          },
+          "level": {
+            "type": "string",
+            "title": "Level",
+            "description": "Nivel: 'novato', 'intermedio' o 'elite'"
+          }
+        },
+        "type": "object",
+        "required": [
+          "session_id",
+          "sessions_last_3d",
+          "sessions_last_7d",
+          "sessions_last_28d",
+          "load_last_3d",
+          "load_last_7d",
+          "acwr_valid",
+          "days_since_first_session",
+          "notes_last_28d",
+          "level"
+        ],
+        "title": "SessionFeaturesRequest",
+        "description": "Features de una sesión de entrenamiento.\nTodos los campos opcionales se imputarán con las medianas del training set."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  },
+  "servers": [
+    {
+      "url": "https://shell-whiny-legwarmer.ngrok-free.dev",
+      "description": "ngrok tunnel"
+    }
+  ]
+}

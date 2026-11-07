@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "wodpredict-ai": {
+      "command": "D:\\Miniconda3\\Scripts\\conda.exe",
+      "args": [
+        "run", "-n", "wodpredict",
+        "python", "wodpredict_mcp/server.py"
+      ],
+      "cwd": "c:\\Users\\ricar\\.bob\\playground\\wodpredict-ai",
+      "env": {
+        "WODPREDICT_API_URL": "http://localhost:8001"
+      }
+    }
+  }
+}

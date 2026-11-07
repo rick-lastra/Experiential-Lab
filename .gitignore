@@ -1,0 +1,63 @@
+﻿# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Conda
+.conda/
+
+# Tests / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Jupyter / IPython
+.ipynb_checkpoints/
+*.ipynb
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE / editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Bob (IBM Bob) local config
+.bob/
+
+# Logs
+*.log
+logs/
+
+# Docker
+*.tar
+
+# Model artifacts — these ARE committed (the model is part of the project)
+# model/artifacts/  <-- do NOT ignore
+
+# Monitoring reports (generated at runtime)
+monitoring/reports/

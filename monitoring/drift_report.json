@@ -1,0 +1,264 @@
+{
+  "n_reference": 43416,
+  "n_new": 43417,
+  "has_drift": true,
+  "drifted_features": [
+    "sessions_last_28d",
+    "load_last_3d",
+    "load_last_7d",
+    "mean_session_load_28d",
+    "acwr3_load",
+    "acwr_freq",
+    "acwr_load",
+    "days_since_first_session",
+    "prev_rpe",
+    "prev_session_load",
+    "prev_has_note",
+    "prob_fatiga_prev_session",
+    "prob_fatiga_last_note",
+    "days_since_last_note",
+    "notes_last_28d",
+    "load_ratio_3_28",
+    "load_ratio_7_28",
+    "fatigue_signal",
+    "days_since_note_capped",
+    "prev_rpe_norm"
+  ],
+  "severe_features": [
+    "days_since_first_session"
+  ],
+  "feature_results": [
+    {
+      "feature": "days_since_prev_session",
+      "ks_statistic": 0.003,
+      "ks_pvalue": 0.9887,
+      "psi": 0.0,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "sessions_last_3d",
+      "ks_statistic": 0.0034,
+      "ks_pvalue": 0.9584,
+      "psi": 0.0001,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "sessions_last_7d",
+      "ks_statistic": 0.0059,
+      "ks_pvalue": 0.4431,
+      "psi": 0.0007,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "sessions_last_28d",
+      "ks_statistic": 0.0131,
+      "ks_pvalue": 0.0011,
+      "psi": 0.0042,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "load_last_3d",
+      "ks_statistic": 0.0286,
+      "ks_pvalue": 0.0,
+      "psi": 0.0111,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "load_last_7d",
+      "ks_statistic": 0.0356,
+      "ks_pvalue": 0.0,
+      "psi": 0.0059,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "mean_session_load_28d",
+      "ks_statistic": 0.0606,
+      "ks_pvalue": 0.0,
+      "psi": 0.0244,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr3_freq",
+      "ks_statistic": 0.0069,
+      "ks_pvalue": 0.2553,
+      "psi": 0.001,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr3_load",
+      "ks_statistic": 0.0176,
+      "ks_pvalue": 0.0,
+      "psi": 0.0047,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr_freq",
+      "ks_statistic": 0.0106,
+      "ks_pvalue": 0.0157,
+      "psi": 0.0014,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr_load",
+      "ks_statistic": 0.0231,
+      "ks_pvalue": 0.0,
+      "psi": 0.0028,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr_valid",
+      "ks_statistic": 0.0001,
+      "ks_pvalue": 1.0,
+      "psi": 0.0,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "days_since_first_session",
+      "ks_statistic": 0.8811,
+      "ks_pvalue": 0.0,
+      "psi": 0.6435,
+      "drift_ks": true,
+      "drift_psi": "severe"
+    },
+    {
+      "feature": "prev_rpe",
+      "ks_statistic": 0.0262,
+      "ks_pvalue": 0.0,
+      "psi": 0.0068,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "prev_session_load",
+      "ks_statistic": 0.0431,
+      "ks_pvalue": 0.0,
+      "psi": 0.0197,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "prev_has_note",
+      "ks_statistic": 0.0104,
+      "ks_pvalue": 0.0189,
+      "psi": 0.0,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "prob_fatiga_prev_session",
+      "ks_statistic": 0.0102,
+      "ks_pvalue": 0.0217,
+      "psi": 0.0004,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "prob_fatiga_last_note",
+      "ks_statistic": 0.0157,
+      "ks_pvalue": 0.0,
+      "psi": 0.0016,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "days_since_last_note",
+      "ks_statistic": 0.0128,
+      "ks_pvalue": 0.0015,
+      "psi": 0.0011,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "notes_last_28d",
+      "ks_statistic": 0.0203,
+      "ks_pvalue": 0.0,
+      "psi": 0.0027,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "level_enc",
+      "ks_statistic": 0.0074,
+      "ks_pvalue": 0.1841,
+      "psi": 0.0,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "load_ratio_3_28",
+      "ks_statistic": 0.02,
+      "ks_pvalue": 0.0,
+      "psi": 0.0045,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "load_ratio_7_28",
+      "ks_statistic": 0.0116,
+      "ks_pvalue": 0.006,
+      "psi": 0.0006,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "freq_ratio_3_7",
+      "ks_statistic": 0.0056,
+      "ks_pvalue": 0.5117,
+      "psi": 0.0009,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "fatigue_signal",
+      "ks_statistic": 0.0157,
+      "ks_pvalue": 0.0,
+      "psi": 0.0016,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "days_since_note_capped",
+      "ks_statistic": 0.0128,
+      "ks_pvalue": 0.0015,
+      "psi": 0.0011,
+      "drift_ks": true,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr_load_risk",
+      "ks_statistic": 0.0033,
+      "ks_pvalue": 0.9742,
+      "psi": 0.0,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "acwr_freq_risk",
+      "ks_statistic": 0.0071,
+      "ks_pvalue": 0.2241,
+      "psi": 0.0,
+      "drift_ks": false,
+      "drift_psi": "none"
+    },
+    {
+      "feature": "prev_rpe_norm",
+      "ks_statistic": 0.0262,
+      "ks_pvalue": 0.0,
+      "psi": 0.0068,
+      "drift_ks": true,
+      "drift_psi": "none"
+    }
+  ]
+}
