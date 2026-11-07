@@ -589,26 +589,60 @@ El skill está publicado en el catálogo de la organización como **`wodpredict-
 
 ### Replicar la integración con Orchestrate
 
-Para replicar esta integración cuando se disponga de una cuenta de watsonx Orchestrate:
+> Requiere una cuenta de [watsonx Orchestrate](https://www.ibm.com/products/watsonx-orchestrate) (trial o PAYG).
+
+La integración funciona en dos capas: primero hay que hacer que la API sea accesible públicamente desde Internet (porque watsonx Orchestrate necesita una URL HTTPS para llamar a los tools), y luego registrar esa URL en el Agent Builder de Orchestrate usando el archivo [`openapi.json`](openapi.json) que ya está incluido en el repositorio.
+
+**Paso 1 — Arrancar la API y exponerla con ngrok**
+
+ngrok crea un túnel HTTPS público que apunta a tu servidor local. Es la forma más rápida de conectar Orchestrate con una API que corre en tu máquina sin necesidad de deploy en la nube.
 
 ```bash
-# 1. Arrancar la API y exponer con ngrok
+# Terminal 1 — arranca la API
 uvicorn api.main:app --port 8001
+
+# Terminal 2 — crea el túnel público
 ngrok http 8001
+# ngrok mostrará una URL del tipo: https://xxxx-xx-xx.ngrok-free.app
+```
 
-# 2. En watsonx Orchestrate:
-#    Agent Builder → Tools → Add tool → OpenAPI
-#    Usar openapi.json con la URL del tunnel de ngrok
+**Paso 2 — Registrar los tools en watsonx Orchestrate**
 
-# 3. (Opcional) Deploy permanente en IBM Code Engine
+Con la URL de ngrok en mano:
+
+1. Entra a watsonx Orchestrate → **Agent Builder**
+2. Ve a **Tools** → **Add tool** → **OpenAPI**
+3. Sube o pega el contenido de [`openapi.json`](openapi.json)
+4. En el campo `server URL` reemplaza el placeholder por la URL de ngrok
+5. Orchestrate detectará automáticamente los 3 endpoints (`/predict`, `/explain`, `/health`) y los registrará como skills invocables por el agente
+
+**Paso 3 (opcional) — Deploy permanente en IBM Code Engine**
+
+Para no depender de ngrok (que expira y cambia de URL), se puede desplegar la imagen Docker en IBM Code Engine y obtener una URL fija:
+
+```bash
+# Subir la imagen al IBM Container Registry
+ibmcloud cr login
+docker tag wodpredict-ai:latest us.icr.io/wodpredict/wodpredict-ai:latest
+docker push us.icr.io/wodpredict/wodpredict-ai:latest
+
+# Crear la app en Code Engine
 ibmcloud ce app create \
   --name wodpredict-api \
   --image us.icr.io/wodpredict/wodpredict-ai:latest \
   --port 8080 --min-scale 1 --max-scale 3 --cpu 1 --memory 4G
 
-# 4. Actualizar openapi.json con la URL permanente:
-# servers[0].url = "https://wodpredict-api.<id>.us-south.codeengine.appdomain.cloud"
+# Obtener la URL permanente
+ibmcloud ce app get --name wodpredict-api --output url
 ```
+
+**Paso 4 — Actualizar openapi.json con la URL permanente**
+
+```json
+"servers": [{ "url": "https://wodpredict-api.<id>.us-south.codeengine.appdomain.cloud" }]
+```
+
+Luego volver a registrar el tool en Orchestrate (Agent Builder → Tools → editar) con la nueva URL. A partir de ese momento la integración es permanente y no depende de ningún proceso local.
 
 ---
 
