@@ -5,6 +5,8 @@ Predicción de **overreaching** (sobreentrenamiento) y prescripción adaptativa 
 
 El modelo fue expuesto como un **agente conversacional en watsonx Orchestrate**, conectado a **Slack (IBM SkillsBuild)** para validar su funcionamiento en vivo: entrenadores y atletas podían consultar el riesgo de sobreentrenamiento y recibir explicaciones SHAP en lenguaje natural directamente desde el canal `#wodpredict-ai`, sin escribir una sola línea de código.
 
+El servidor MCP fue además probado localmente como extensión de agentes de IA: **IBM Bob** lo consumió desde su panel **Settings → MCP Servers** y **Claude Desktop** hizo lo mismo desde su configuración local — ambos invocaron los tools `predict_overreaching` y `explain_overreaching` en lenguaje natural con resultados documentados en capturas de pantalla.
+
 ![IBM SkillsBuild](https://img.shields.io/badge/IBM%20SkillsBuild-AI%20Lab%20Mexico%202026-054ADA?logo=ibm&logoColor=white)
 ![Python](https://img.shields.io/badge/python-3.12-blue?logo=python&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white)
@@ -385,6 +387,10 @@ En Bob: **Settings → MCP → `+` → Open Configuration File** y añade:
 > `"command": "D:\\Miniconda3\\envs\\wodpredict\\python.exe"`
 > Obtén la ruta exacta con: `conda run -n wodpredict python -c "import sys; print(sys.executable)"`
 
+Una vez registrado, el servidor aparece en la lista de MCP Servers de Bob con estado **Connected**:
+
+![Bob Settings → MCP — wodpredict-ai Connected](screenshots/12_bob_mcp_setting.png)
+
 ### Interoperabilidad — agentes compatibles
 
 El protocolo MCP es un estándar abierto. El mismo servidor `wodpredict_mcp/server.py` puede conectarse a cualquiera de estos clientes:
@@ -738,6 +744,7 @@ Este proyecto fue desarrollado como parte del programa **[IBM SkillsBuild AI Exp
 | Herramienta | Rol en el proyecto | Disponibilidad |
 |---|---|---|
 | **IBM Bob** (AI coding assistant) | Desarrollo completo del proyecto: arquitectura, código, tests, debugging y documentación asistidos por IA | ✅ AI Experiential Lab |
+| **IBM Bob** (MCP client) | Consumo del servidor MCP local vía **Settings → MCP Servers**: tools `predict_overreaching` y `explain_overreaching` invocados en lenguaje natural desde el chat de Bob, extendiendo sus capacidades con el modelo de WODPredict | ✅ AI Experiential Lab |
 | **watsonx Orchestrate** | Despliegue del agente conversacional WODPredict Agent 1; registro de skills OpenAPI; integración con Slack | ✅ AI Experiential Lab |
 | **IBM SkillsBuild** | Plataforma del programa de aprendizaje; workspace de Slack donde se validó el agente en producción | ✅ AI Experiential Lab |
 | **IBM Container Registry** | Almacenamiento de la imagen Docker (`us.icr.io/wodpredict/wodpredict-ai`) para deploy en nube | 🔶 Cuenta IBM Cloud PAYG |
