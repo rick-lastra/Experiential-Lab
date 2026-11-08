@@ -777,6 +777,8 @@ El agente se conectó a Slack a través del workspace de **IBM SkillsBuild**, de
  ## Enlaces
  
  * Dataset sintético en Hugging Face (versión v1.0): https://huggingface.co/datasets/rick-lastra/wodpredict-synth
+ * Video pitch deck https://tinyurl.com/wodpredict
+
 
 ---
 ## Contacto y créditos
